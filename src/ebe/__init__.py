@@ -1,7 +1,11 @@
-"""Escola Bíblica Epignósis — Pacote do sistema de geração de materiais."""
-from importlib.metadata import version, PackageNotFoundError
+"""Escola Bíblica Epignósis — Sistema de Geração de Apostilas.
 
-try:
-    __version__ = version("ebe")
-except PackageNotFoundError:
-    __version__ = "0.1.0"
+Package principal.
+Versão: 0.1.0
+"""
+
+__version__ = "0.1.0"
+__author__ = "Escola Bíblica Epignósis"
+__all__ = ["version"]
+
+version = __version__
