@@ -1,0 +1,21 @@
+# Runtime — Sistema de Geração de Apostilas EBE
+# Versões pinadas (menor.patch) para garantir reprodutibilidade em CI.
+
+python-docx>=1.1.2,<2.0
+google-generativeai>=0.8.3
+google-ai-generativelanguage>=0.6.10
+jinja2>=3.1.4,<4.0
+pyyaml>=6.0.2,<7.0
+tenacity>=8.5.0,<9.0
+numpy>=1.26.4,<2.1
+pydantic>=2.9.2,<3.0
+python-slugify>=8.0.4,<9.0
+click>=8.1.7,<9.0
+tqdm>=4.66.5
+
+# Ferramentas (parse de PDFs, etc.)
+pdfplumber>=0.11.4
+pypdf>=4.3.1
+
+# Opcionais de desenvolvimento (instalar com `pip install -r requirements-dev.txt`)
+# pytest, pytest-cov, ruff, mypy, pre-commit

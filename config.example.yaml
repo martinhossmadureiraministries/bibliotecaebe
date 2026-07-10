@@ -1,0 +1,71 @@
+# =============================================================================
+# CONFIGURAÇÃO EXEMPLO — Sistema de Geração de Apostilas EBE
+# Copie este ficheiro para `config.yaml` (que está em .gitignore) para ajustes
+# locais. Os valores predefinidos em `src/ebe/config.py` são suficientes para o
+# arranque em CI via GitHub Actions (tudo é controlado por secrets).
+# =============================================================================
+
+geral:
+  sistema_versao: "0.1.0"
+  lingua: "pt-PT"
+  versao_biblica: "ARC"
+  pagina_min: 15
+  pagina_max: 20
+  apostilas_por_dia: 11
+  max_tentativas_geracao: 3
+  max_tentativas_originalidade: 3
+  limiar_similaridade: 0.70
+  limiar_similaridade_estrutura: 0.78
+
+gemini:
+  # A chave NUNCA é lida daqui. Use GEMINI_API_KEY em GitHub Secrets ou .env.
+  modelo_geracao: "gemini-2.0-flash"
+  modelo_embeddings: "text-embedding-004"
+  timeout_segundos: 120
+  # Limites conservadores para o free tier — ajustar se a cota oficial mudar.
+  rpm: 5
+  tpm: 500000
+  rpd: 1000
+  usar_context_caching: true
+  cache_ttl_segundos: 3600
+
+caminhos:
+  curriculum_ativo: "state/curriculum.json"
+  registry: "state/registry.jsonl"
+  output_dir: "output"
+  logs_dir: "state/logs"
+  hashes_dir: "state/hashes"
+  embeddings_dir: "state/embeddings"
+  cache_dir: "state/cache"
+  prompts_dir: "src/ebe/ai/prompts"
+  assets_dir: "assets"
+
+curriculum:
+  active_map: "EBE-PLAN-APO-1"
+  maps:
+    - code: "EBE-PLAN-APO-1"
+      json: "state/curriculum.json"
+      pdf: "EBE_Mapa_Completo_Apostilas-2.pdf"
+      status: "active"
+      first_id: 1
+      last_id: 1029
+      total: 1029
+
+editorial:
+  fonte_titulo: "Garamond"
+  fonte_corpo: "Garamond"
+  cor_primaria: "#1B3A5C"
+  cor_secundaria: "#2E7D4F"
+  cor_terciaria: "#C9A14B"
+  margens_cm:
+    topo: 2.5
+    fundo: 2.5
+    esquerda: 3.0
+    direita: 2.5
+
+github:
+  # Ao mover os ficheiros de `workflows_ready/` para `.github/workflows/`,
+  # defina aqui o ramo alvo do workflow.
+  workflow_branch: "main"
+  auto_commit: true
+  auto_push: true

@@ -1,0 +1,42 @@
+Você vai redigir O CONTEÚDO TEXUAL DE UMA SECÇÃO da apostila "{{ a.titulo }}".
+
+DADOS:
+- Apostila n.º {{ a.numero }} — {{ a.titulo }}
+- Secção {{ section_num }} — {{ outline.titulo }}
+- Plano da secção:
+  * Número de parágrafos esperado: {{ outline.paragrafos_count }}
+  * Citações bíblicas (ARC) obrigatórias: {% for c in outline.citacoes %}- {{ c.referencia }}{% endfor %}
+  * Caixas de destaque: {{ outline.caixas | length }}
+  * Subsecções: {{ outline.subsecoes | length }}
+  * Tabelas: {{ outline.tabelas | length }}
+  * Listas ordenadas: {{ outline.lista_ordenada_count }}
+  * Listas marcadas: {{ outline.lista_marcada_count }}
+
+SECÇÕES JÁ REDIGIDAS (para garantir coesão e não repetir):
+{% for t in previous %}- {{ t.numero }} {{ t.titulo }} — primeiros parágrafos: {{ t.snippet }}
+{% endfor %}
+
+SUA TAREFA:
+Devolva um JSON com o CONTEÚDO FINAL da secção:
+
+{
+  "paragrafos": ["parágrafo 1…", "parágrafo 2…"],
+  "citacoes": [{"texto": "texto literal da citação (ARC)", "referencia": "Livro X.Y"}],
+  "lista_ordenada": ["item 1", "item 2"],
+  "lista_marcada": ["item 1", "item 2"],
+  "caixas": [{"titulo": "Para reter", "texto": "texto da caixa (1-3 frases)."}],
+  "tabelas": [{"cabecalho": ["Col1", "Col2"], "linhas": [["a", "b"]]}],
+  "subsecoes": [
+    {"titulo": "Equívoco 1", "paragrafos": ["p1", "p2"], "citacoes": [...], "lista_ordenada": [], "lista_marcada": []}
+  ]
+}
+
+REGRAS:
+- Escreva em português europeu/angolano, ARC.
+- Seja profundo, claro, prático, pastoral.
+- Nunca repita frases ou ideias das secções anteriores.
+- Nunca comece a secção com "nesta secção vamos ver…". Entre directamente no assunto.
+- As citações devem ser TEXTUAIS da ARC. Não altere palavras.
+- Parágrafos com 3-6 frases, densos, sem "enchimento".
+- Se um campo não for usado (ex: listas), devolva lista vazia [].
+- Responda APENAS com o JSON, sem explicações adicionais.
