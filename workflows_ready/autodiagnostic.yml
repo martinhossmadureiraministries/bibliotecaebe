@@ -1,0 +1,40 @@
+name: EBE — Autodiagnóstico Semanal
+# Corre todos os domingos às 02:00 UTC. Faz uma revisão e actualiza PROJECT_STATE.md.
+on:
+  schedule:
+    - cron: "0 2 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - run: pip install -r requirements.txt && pip install -e .
+      - name: Autodiagnóstico
+        run: PYTHONPATH=src python -m ebe diag
+      - name: Actualizar estado
+        run: |
+          PYTHONPATH=src python -c "
+          from ebe.config import load_config
+          from ebe.state.project_state import write_state
+          write_state(load_config())
+          "
+      - name: Commit e push (se houver mudanças)
+        run: |
+          git config user.name "ebe-bot"
+          git config user.email "ebe-bot@users.noreply.github.com"
+          git add PROJECT_STATE.md CHANGELOG.md ROADMAP.md
+          if git diff --cached --quiet; then
+            echo "Sem alterações."
+          else
+            git commit -m "chore(diag): autodiagnóstico semanal"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi

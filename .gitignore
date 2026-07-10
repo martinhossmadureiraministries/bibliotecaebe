@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Ambiente / segredos
+.env
+.env.*
+*.secret
+*.key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Estado transitório (estes são gerados pelo pipeline, não versionados)
+state/logs/*.log
+state/cache/*
+!state/cache/.gitkeep
+state/embeddings/*.npz
+!state/embeddings/.gitkeep
+state/last_error.json
+
+# Documentos gerados em modo de teste local (os oficiais vão para output/ e SÃO versionados)
+# Output oficial É versionado.
+# output/test_runs/
+
+# Ficheiros temporários de escrita atómica
+*.tmp
+*.tmp.*

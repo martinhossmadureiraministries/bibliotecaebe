@@ -1,0 +1,40 @@
+name: EBE — Actualizar Dashboard (STATE/CHANGELOG/ROADMAP)
+# Actualiza paineis Markdown após qualquer push (incluindo commits do bot).
+on:
+  push:
+    branches: ["main", "arena/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - run: pip install -r requirements.txt && pip install -e .
+      - name: Gerar PROJECT_STATE.md
+        run: PYTHONPATH=src python -c "
+        from ebe.config import load_config
+        from ebe.state.project_state import write_state
+        write_state(load_config())
+        "
+      - name: Commit e push
+        run: |
+          git config user.name "ebe-bot"
+          git config user.email "ebe-bot@users.noreply.github.com"
+          git add PROJECT_STATE.md
+          if git diff --cached --quiet; then
+            echo "Sem alterações ao dashboard."
+          else
+            git commit -m "docs(dashboard): actualizar PROJECT_STATE"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi

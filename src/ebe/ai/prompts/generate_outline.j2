@@ -1,0 +1,103 @@
+Você vai redigir O OUTLINE (estrutura detalhada) da Apostila N.º {{ a.numero }} — "{{ a.titulo }}" da Escola Bíblica Epignósis.
+
+DADOS DA APOSTILA:
+- Nível: {{ a.nivel }}
+- Instituto: {{ a.instituto }}
+- Escola: {{ a.escola }}
+- Curso: {{ a.curso }}
+- Módulo: {{ a.modulo }}
+- Carga horária: {{ a.carga_horaria or "25 h" }}
+- Versículo-chave SUGERIDO: procure um versículo bíblico ARC muito central ao tema. Devolva o texto exacto e a referência.
+- Posição: é a apostila {% if a.id == 1 %}INICIAL do curso.{% elif a.id == total_apostilas %}FINAL do curso.{% else %}n.º {{ a.numero }} do curso.{% endif %}
+
+SUA TAREFA:
+Devolva um JSON com a estrutura COMPLETA da apostila, que será usada para gerar o texto de cada secção.
+
+O JSON deve conter EXACTAMENTE as seguintes chaves:
+
+{
+  "versiculo_chave": {"texto": "…", "referencia": "Livro Cap.Verso"},
+  "texto_base": "Nome do livro e passagem recomendados para leitura prévia (ex: Romanos 3.21-26)",
+  "subtitulo": "um subtítulo curto que complementa o título (até 10 palavras)",
+  "apresentacao": [
+    "parágrafo 1 da apresentação (situação da apostila no curso, motivação)",
+    "parágrafo 2 (o que o aluno vai encontrar)",
+    "parágrafo 3 (convite)"
+  ],
+  "objectivos": [
+    "CONHECER — …",
+    "CRER — …",
+    "VIVER — …",
+    "SERVIR — …"
+  ],
+  "introducao": [
+    "parágrafo 1",
+    "parágrafo 2",
+    "parágrafo 3"
+  ],
+  "secoes": [
+    {
+      "titulo": "Título da subsecção 2.1",
+      "paragrafos_count": 4,
+      "citacoes": [
+        {"texto": "texto da citação bíblica (ARC)", "referencia": "Livro X.Y"}
+      ],
+      "lista_ordenada_count": 0,
+      "lista_marcada_count": 0,
+      "caixas": [
+        {"titulo": "Para reter", "texto": "frase concisa"}
+      ],
+      "tabelas": [
+        {"cabecalho": ["Coluna 1", "Coluna 2"], "linhas": [["item1", "desc1"]]}
+      ],
+      "subsecoes": [
+        {"titulo": "Equívoco 1 — …", "paragrafos_count": 2}
+      ]
+    }
+  ],
+  "aplicacao_pratica": [
+    "parágrafo introdutório da aplicação"
+  ],
+  "aplicacao_itens": [
+    "Na vida pessoal e devocional — …",
+    "Na família — …",
+    "Na igreja local — …",
+    "Na sociedade e trabalho — …",
+    "No ministério — …"
+  ],
+  "sintese": [
+    "parágrafo de síntese 1",
+    "parágrafo de síntese 2",
+    "parágrafo de encerramento"
+  ],
+  "exercicios": [
+    {"titulo": "I — Verifique a sua compreensão", "itens": ["pergunta 1", "pergunta 2", "... 5-8 no total"]},
+    {"titulo": "II — Reflexão pessoal", "itens": ["..."]},
+    {"titulo": "III — Ministério e serviço", "itens": ["..."]}
+  ],
+  "estudo_complementar": {
+    "titulo": "Título do estudo (passagem bíblica)",
+    "texto": "Introdução de 1 parágrafo ao estudo complementar",
+    "perguntas": ["pergunta 1", "pergunta 2", "... 4-5 no total"]
+  },
+  "proxima_apostila": {
+    "titulo": "Título da próxima apostila, se conhecida, ou o próximo tema",
+    "descricao": "texto de 1 ou 2 parágrafos a preparar o leitor",
+    "preparar": ["item de preparação 1", "item 2", "item 3"]
+  },
+  "glossario": [
+    {"termo": "Termo", "definicao": "Definição breve de 1 a 2 frases."}
+  ],
+  "bibliografia": [
+    "SOBRENOME, Nome. Título da obra. Cidade: Editora."
+  ]
+}
+
+REGRAS PARA O OUTLINE:
+- O outline deve conter EXACTAMENTE 5 secções numeradas 2.1 a 2.5 do Desenvolvimento.
+- As secções devem cobrir: fundação bíblica / definição do conceito / explicação/detalhamento / equívocos e dúvidas / quadro de destaque para reter (ajuste os títulos conforme o tema).
+- Use pelo menos 5 citações bíblicas REAIS no total (em versículo-chave + secções + estudo complementar).
+- Inclua entre 5 e 8 termos no glossário.
+- Inclua entre 3 e 5 obras REAIS na bibliografia.
+- Não faça referências a si mesmo, ao processo de redacção, nem a "esta apostila foi gerada…".
+- Responda APENAS com o JSON, sem explicações adicionais.

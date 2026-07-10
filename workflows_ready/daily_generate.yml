@@ -1,0 +1,118 @@
+name: EBE — Geração Diária de Apostilas
+# Este workflow deve ser movido para .github/workflows/ quando o utilizador puder.
+# Execução diária: 04:00 UTC (05:00 Luanda). Gera até 11 apostilas e actualiza
+# automaticamente PROJECT_STATE.md, CHANGELOG.md e ROADMAP.md.
+#
+# Para mover a partir do telemóvel:
+#   1. Abra o repositório no GitHub (web).
+#   2. Navegue até workflows_ready/daily_generate.yml.
+#   3. Clique em "…" → "Copy path" ou edite e mova para .github/workflows/daily_generate.yml.
+#   4. Certifique-se de que o secret GEMINI_API_KEY existe (Settings → Secrets → Actions).
+
+on:
+  schedule:
+    - cron: "0 4 * * *"     # 04:00 UTC diário
+  workflow_dispatch:        # permite accionar manualmente a partir do GitHub web
+    inputs:
+      count:
+        description: "Número de apostilas a gerar (1-11)"
+        required: false
+        default: "11"
+        type: choice
+        options: ["1", "3", "5", "11"]
+      simulate:
+        description: "Modo simulação (sem chamar Gemini)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write           # necessário para fazer commit/push
+
+concurrency:
+  group: ebe-daily
+  cancel-in-progress: false # nunca cancele; queremos que termine o lote
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360    # 6 horas, folga para rate limit/retries
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GITHUB_BRANCH: ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Sanity check (key availability)
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "::warning::GEMINI_API_KEY não está definida."
+            echo "Defina o secret em Settings → Secrets and variables → Actions."
+            echo "Sem a chave, o workflow não pode gerar apostilas reais."
+            exit 1
+          fi
+
+      - name: Criar pasta .github/workflows se necessário
+        run: |
+          mkdir -p .github/workflows
+          # Se este ficheiro está em workflows_ready, copiamos para .github/workflows se não existir
+          if [ ! -f .github/workflows/daily_generate.yml ]; then
+            cp workflows_ready/daily_generate.yml .github/workflows/daily_generate.yml
+            echo "Cópia para .github/workflows/ realizada."
+          fi
+
+      - name: Actualizar PROJECT_STATE (pré)
+        run: |
+          PYTHONPATH=src python -c "
+          from ebe.config import load_config
+          from ebe.state.project_state import write_state
+          write_state(load_config())
+          "
+
+      - name: Executar pipeline
+        run: |
+          COUNT="${{ github.event.inputs.count || '11' }}"
+          if [ "${{ github.event.inputs.simulate || 'false' }}" = "true" ]; then
+            PYTHONPATH=src python -m ebe generate --count $COUNT --simulate-ai
+          else
+            PYTHONPATH=src python -m ebe generate --count $COUNT
+          fi
+
+      - name: Actualizar PROJECT_STATE (pós)
+        run: |
+          PYTHONPATH=src python -c "
+          from ebe.config import load_config
+          from ebe.state.project_state import write_state
+          write_state(load_config())
+          "
+
+      - name: Commit e push
+        run: |
+          git config user.name  "ebe-bot"
+          git config user.email "ebe-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração a commitar."
+          else
+            git commit -m "chore(pipeline): geração diária de apostilas
+Motivo: execução automática do workflow diário.
+Impacto: novos DOCX em output/ e actualização do state/.
+Próximos passos: revisão manual amostral no fim-de-semana."
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
